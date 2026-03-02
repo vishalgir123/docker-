@@ -1,0 +1,67 @@
+🐳 What is Docker?
+
+Docker is a tool used to create, run, and manage applications inside containers.
+
+Docker helps developers package an application with:
+
+Code
+
+Libraries
+
+Dependencies
+
+Configuration files
+
+So the app runs the same everywhere (your laptop, server, cloud).
+
+Docker is developed by Docker, Inc..
+
+📦 What is a Container?
+
+A container is a lightweight, portable box that contains:
+
+Application
+
+All required software to run it
+
+It works on any system where Docker is installed.
+
+👉 Example:
+If you create a Node.js app on Ubuntu, it will also run on Windows or cloud without problems using Docker.
+
+🚀 Why Use Docker?
+
+✅ Runs anywhere
+
+✅ Easy deployment
+
+✅ Saves time
+
+✅ Lightweight (faster than Virtual Machines)
+
+✅ Good for DevOps & Microservices
+
+🆚 Docker vs Virtual Machine
+Docker (Container)	Virtual Machine
+Lightweight	Heavy
+Fast startup	Slow startup
+Shares OS kernel	Full OS inside
+🛠 Simple Example
+
+Without Docker:
+
+“It works on my machine!” 😅
+
+With Docker:
+
+“It works everywhere!” 😎
+
+If you want, I can also explain:
+
+Docker architecture
+
+Docker basic commands
+
+Docker vs Kubernetes
+
+How to install Docker on Ubuntu
