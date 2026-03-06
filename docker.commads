@@ -1,0 +1,11 @@
+docker --version
+docker pull image_name
+docker images
+docker run -it image_name
+docker ps
+docker ps -a
+docker stop container_id
+docker start container_id
+docker rm container_id
+docker rmi image_name
+docker exec -it container_id bash
