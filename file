@@ -1,0 +1,154 @@
+Dockerfile
+Last Updated : 10 Feb, 2026
+
+A Dockerfile is a simple text file that contains a script of instructions for building a Docker image. Think of it as a recipe for creating your application's environment. The Docker engine reads this file and executes the commands in order, layer by layer, to assemble a final, runnable image.
+
+This automated process is the foundation of containerization's power, ensuring that your application runs the same way everywhere—from your local machine to a production server.
+Docker
+
+
+Before we dive into the instructions, let's quickly clarify two core concepts:
+
+    Docker Image: This is a lightweight, standalone, executable package that includes everything needed to run a piece of software: the code, runtime, system tools, libraries, and settings. It's the blueprint or the "cake" made from the Dockerfile recipe.
+    Docker Container: This is a running instance of an image. You can create, start, stop, and delete containers. If the image is the cake, a container is a slice of that cake that you are actively using.
+
+Dockerfile Instructions
+
+Each instruction plays a specific role in building images, from defining the base system to copying files, running scripts, and setting container
+dockerfile_build_flow
+1. FROM
+
+This must be the very first instruction in a Dockerfile. It sets the base image for subsequent instructions, essentially choosing the foundational operating system or environment for your application.
+Syntax
+
+    FROM <ImageName> 
+
+Example: The base image will be ubuntu:19.04 Operating System.
+
+FROM ubuntu:19.04
+
+2. COPY
+
+The copy command is used to copy the file/folders to the image while building the image. 
+Syntax:
+
+    COPY <Source>   <Destination>  
+
+Example: Copying the .war file to the Tomcat webapps directory
+
+COPY target/java-web-app.war  /usr/local/tomcat/webapps/java-web-app.war
+
+3. ADD
+
+Has all the features of COPY, but can also handle remote file URLs and automatically extract compressed files (like .tar.gz) into the destination directory.
+Syntax
+
+    ADD <URL>  
+
+Example: Try to download Jenkins using ADD command 
+
+ADD https://ftp.yz.yamagata-u.ac.jp/pub/misc/jenkins/war/2.397/jenkins.war
+
+Best Practice: Always prefer COPY unless you specifically need ADD's tar extraction or remote URL features. COPY is more transparent and predictable
+
+4. RUN
+
+This command executes any commands in a new layer on top of the current image and commits the results. These are build-time commands needed to set up your application, such as installing packages.
+Syntax
+
+    RUN < Command + ARGS> 
+
+Example
+
+RUN touch file
+
+5. CMD
+
+The main purpose of the CMD command is to start the process inside the container and it can be overridden.
+Syntax
+
+    CMD [command + args] 
+
+Example: Starting Jenkins 
+
+CMD ["java","-jar", "Jenkins.war"]
+
+6. ENTRYPOINT
+
+A container that will function as an executable is configured by ENTRYPOINT. When you start the Docker container, a command or script called ENTRYPOINT is executed. The only difference between CMD and ENTRYPOINT is CMD can be overridden and ENTRYPOINT instruction in a Dockerfile can be overridden using the --entrypoint flag with the docker run command.
+
+Syntax
+
+    ENTRYPOINT [command + args] 
+
+Example: Executing the echo command.
+
+ENTRYPOINT ["echo","Welcome to GFG"]
+
+Stages of Creating Docker Image from Dockerfile
+
+The following are the stages of creating docker image form Dockerfile:
+dockerfile
+Create Docker Image from Dockerfile
+Example 1: Create Dockerfile With Example (Jenkins)
+
+In this example, we will write the Dockerfile for Jenkins and build an image by using Dockerfile which has been written for Jenkins and we will run it as a container.
+
+Step 1: Open Docker and create a file with the name Dockerfile.
+
+Step 2: Open the Dockerfile by using the vi editor and start writing the command that is required to build the Jenkins image.
+Specifying Docker Version
+Build the Jenkins Image
+Dockerfile for Jenkins Image
+
+We used JDK as a base image because Jenkins's pre-requisite is JDK after that we added a command called MAINTAINER which indicates the author or owner of the docker file and we added the ENV variable where we set the path for the Jenkins and by using RUN command we are creating the path and by using ADD we are downloading the Jenkins and starting the .war file with the help of CMD command.
+
+FROM openjdk:11-jdk
+MAINTAINER GFG author
+LABEL env=production
+ENV apparea /data/app
+RUN mkdir -p $apparea
+ADD https://ftp.yz.yamagata-u.ac.jp/pub/misc/jenkins/war/2.397/jenkins.war $apparea
+WORKDIR $apparea
+EXPOSE 8080
+CMD ["java","-jar","jenkins.war"]
+
+Jenkins Dockerfile
+Dockerfile for Jenkins Image
+
+Step 3: Build the image by using the below command with the help of Dockerfile and give the necessary tags. and the dot(.) represents the current directory which is a path for Dockerfile.
+
+docker build -t jenkins:1 .
+
+Docker image
+Give tag to Dockerfiles
+
+Step 4: Run the container with the help image ID or tag of the image by using the below command.
+
+docker run -d -p 8080:8080 <Imagetag/ID>
+
+Docker Container
+
+Step 5: Accesses the application (Jenkins) from the internet with the help of host port and hostIP (HostIP: Port)
+containerized application
+Trouble Shooting of Dockerfile Issues
+
+The following are the some of the trouble shooting of Dockerfile Issues:
+
+    Check Build Logs: Review the build logs for identifying the error through error messages and with log details. It helps in with providing the valuable information.
+    Validate Syntax and Instructions: It helps in ensring the dockerfile syntax and the instructions are in the proper order, It helps in addressing the common issues including the missing commands or in correct parameters.
+    Optimize Layer Caching: Try to verify whether the caching is using effectively. Through reordering the instructions we can reduce the changes in frequently modified layers to speed up the build process.
+    Dependency Management: Through ensuring all the dependencies correctly placing as accessable, we can avoid the build failures.
+
+Dockerfile Vs Docker Compose
+
+The following are the difference between dockerfile and Docker Compose:
+Feature	Dockerfile	Docker Compose
+Purpose	Defines how to build a single Docker image	Defines and runs multi-container Docker applications
+File Extension	Dockerfile (no extension)	docker-compose.yml
+Usage	Builds an image layer by layer from instructions	Manages multi-container setups and networking
+Configuration Focus	Focuses on image creation	Focuses on container orchestration and configuration
+Key Commands	FROM, RUN, CMD, COPY, ADD	services, volumes, networks
+Single vs Multi-Container	Single-container focus	Multi-container focus
+Dependencies	Each image built individually	Handles inter-container dependencies
+Example Use Case	Creating a reusable environment for an app	Running an application stack (e.g., web server, database)
