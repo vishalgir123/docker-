@@ -1,0 +1,37 @@
+Docker Networking
+Last Updated : 21 Jan, 2026
+
+At its core, Docker networking is the system that allows Docker containers to communicate with each other, with the Docker host, and with the outside world. It's a powerful feature that enables you to build complex, multi-container applications that are isolated yet interconnected.
+
+When you create a container, Docker gives it its own isolated network environment. This means each container has its own IP address and network interfaces. By default, containers running on the same host can communicate with each other without needing to expose ports to the host machine, creating a secure virtual network.
+Core Networking Concepts
+
+To understand how Docker manages this, let's look at a few core Linux networking features that Docker uses:
+
+    Network Namespaces: This is a Linux kernel feature that provides network isolation. Each container gets its own network namespace, complete with its own network interfaces, IP addresses, and routing tables. This is why a container can't see the network traffic of another container or the host.
+    Virtual Ethernet Devices (veth pairs): To connect a container's isolated namespace to the host's network, Docker uses a veth pair. Think of it as a virtual patch cable. One end is plugged into the container's namespace (appearing as eth0), and the other is plugged into the host's main namespace, usually attached to a virtual bridge.
+    iptables: Docker uses the host's iptables rules (a firewall utility) to manage port mapping and network address translation (NAT). When you expose a port (e.g., -p 8080:80), iptables rules are created to forward traffic from port 8080 on the host to port 80 inside the container.
+
+Docker Network Overview
+ 
+Network Drivers
+
+Docker uses different network drivers to create and manage various types of networks. You can see the available drivers on your system with:
+
+Here are the most common drivers and what they do:
+
+    bridge (Default): This is the default driver for standalone containers. It creates a private, internal network on the host. Containers on the same bridge network can communicate with each other using their internal IP addresses. To access them from outside the host, you must map ports. It's highly recommended to create your own user-defined bridge networks rather than using the default one.
+
+    Why create a custom bridge? 
+
+    Default Bridge: Containers communicate via IP Address. If the container restarts and gets a new IP, communication breaks.
+
+    User-Defined Bridge: Containers communicate via Container Name. You can simply ping database from your web app, and Docker automatically resolves it to the correct IP.
+
+    host: This driver removes network isolation entirely. The container shares the host's network namespace. This means the container uses the host's IP address directly, and any port the container listens on is opened on the host. This can be simpler and offer better performance but sacrifices the security of network isolation.
+    none: This driver gives the container a network stack but attaches it to no network. The container is completely isolated and cannot communicate with other containers or the outside world. It's useful for running batch jobs or tasks that require no network access.
+    overlay: This driver is used for multi-host networking and is the preferred choice for Docker Swarm services. It creates a distributed network that spans multiple Docker hosts, allowing containers (and Swarm services) on different hosts to communicate directly and securely.
+    macvlan: This advanced driver allows you to assign a MAC address to a container, making it appear as a physical device on your network. This is useful for integrating with legacy applications or network monitoring tools that expect devices to have a physical network presence.
+    User-Defined Bridge: Containers communicate via Container Name. You can simply ping database from your web app, and Docker automatically resolves it to the correct IP.
+
+Network Drivers 
