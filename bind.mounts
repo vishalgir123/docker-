@@ -1,0 +1,36 @@
+Bind mounts
+
+When you use a bind mount, a file or directory on the host machine is mounted from the host into a container. By contrast, when you use a volume, a new directory is created within Docker's storage directory on the host machine, and Docker manages that directory's contents.
+When to use bind mounts
+
+Bind mounts are appropriate for the following types of use case:
+
+    Sharing source code or build artifacts between a development environment on the Docker host and a container.
+
+    When you want to create or generate files in a container and persist the files onto the host's filesystem.
+
+    Sharing configuration files from the host machine to containers. This is how Docker provides DNS resolution to containers by default, by mounting /etc/resolv.conf from the host machine into each container.
+
+Bind mounts are also available for builds: you can bind mount source code from the host into the build container to test, lint, or compile a project.
+Bind-mounting over existing data
+
+If you bind mount file or directory into a directory in the container in which files or directories exist, the pre-existing files are obscured by the mount. This is similar to if you were to save files into /mnt on a Linux host, and then mounted a USB drive into /mnt. The contents of /mnt would be obscured by the contents of the USB drive until the USB drive was unmounted.
+
+With containers, there's no straightforward way of removing a mount to reveal the obscured files again. Your best option is to recreate the container without the mount.
+Considerations and constraints
+
+    Bind mounts have write access to files on the host by default.
+
+    One side effect of using bind mounts is that you can change the host filesystem via processes running in a container, including creating, modifying, or deleting important system files or directories. This capability can have security implications. For example, it may affect non-Docker processes on the host system.
+
+    You can use the readonly or ro option to prevent the container from writing to the mount.
+
+    Bind mounts are created to the Docker daemon host, not the client.
+
+    If you're using a remote Docker daemon, you can't create a bind mount to access files on the client machine in a container.
+
+    For Docker Desktop, the daemon runs inside a Linux VM, not directly on the native host. Docker Desktop has built-in mechanisms that transparently handle bind mounts, allowing you to share native host filesystem paths with containers running in the virtual machine.
+
+    Containers with bind mounts are strongly tied to the host.
+
+    Bind mounts rely on the host machine's filesystem having a specific directory structure available. This reliance means that containers with bind mounts may fail if run on a different host without the same directory structure.
